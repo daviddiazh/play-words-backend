@@ -1,6 +1,6 @@
 export interface IDBUseCase {
-  find<T>(): Promise<T[]>;
-  findBy<T>(where: T): Promise<T>;
+  find(): Promise<any[]>;
+  findBy(where: any): Promise<any>;
   create: () => Promise<void>;
   update: () => Promise<void>;
 }

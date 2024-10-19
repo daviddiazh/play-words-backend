@@ -5,10 +5,10 @@ import { IDBUseCase } from '@domain/shared/db.use-case';
 export class DBUseCase implements IDBUseCase {
   constructor(private readonly db: IDBUseCase) {}
 
-  async find<IUser>(): Promise<IUser[]> {
+  async find(): Promise<any[]> {
     return await this.db.find();
   }
-  async findBy<IUser>(where: IUser): Promise<IUser> {
+  async findBy(where: any): Promise<any> {
     return await this.db.findBy(where);
   }
   async create(): Promise<void> {
