@@ -1,5 +1,5 @@
+import { IResponseEntity } from '@shared/domain/response.entity';
 import { IUser } from './user';
-import { IResponseEntity } from '@domain/shared/response.entity';
 
 export interface ILoginResponse {
   token: string;

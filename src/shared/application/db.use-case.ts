@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IDBUseCase } from '@domain/shared/db.use-case';
+import { IDBUseCase } from '@shared/domain/db.use-case';
 
 @Injectable()
 export class DBUseCase implements IDBUseCase {

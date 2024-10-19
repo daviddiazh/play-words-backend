@@ -18,9 +18,10 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@domain/*": ["./src/domain/*",],
-      "@application/*": ["./src/application/*",],
-      "@infrastructure/*": ["./src/infrastructure/*",],
+      "@auth/*": ["./src/auth/*",],
+      "@exam/*": ["./src/exam/*",],
+      "@word/*": ["./src/word/*",],
+      "@shared/*": ["./src/shared/*",],
     },
   }
 }

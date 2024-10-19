@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { DBUseCase } from '@application/shared/db.use-case';
+import { DBUseCase } from '@shared/application/db.use-case';
+import { ResponseEntity } from '@shared/application/response.entity';
 import {
   ILoginResponse,
   ILoginUseCase,
-} from '@domain/auth/interfaces/login.use-case';
-import { IUser } from '@domain/auth/interfaces/user';
-import { ResponseEntity } from '@application/shared/response.entity';
-import { IResponseEntity } from '@domain/shared/response.entity';
+} from '@auth/domain/auth/interfaces/login.use-case';
+import { IUser } from '@auth/domain/auth/interfaces/user';
+import { IResponseEntity } from '@shared/domain/response.entity';
 
 @Injectable()
 export class LoginUseCase implements ILoginUseCase {
