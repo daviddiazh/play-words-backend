@@ -17,7 +17,7 @@ import { LoginController } from './infrastructure/entry-points/controllers/login
 
 @Module({
   imports: [
-    ConfigModule,
+    // ConfigModule,
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
 
     PassportModule,

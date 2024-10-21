@@ -14,7 +14,7 @@ export class DBUseCase implements IDBUseCase {
   async create(payload: any): Promise<void> {
     await this.db.create(payload);
   }
-  async update(payload: any): Promise<void> {
-    await this.db.update(payload);
+  async update(id: any, payload: any): Promise<void> {
+    await this.db.update(id, payload);
   }
 }

@@ -1,24 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserSpec } from './schema';
 import { IDBUseCase } from '@shared/domain/db.use-case';
 import { ResponseEntity } from '@shared/application/response.entity';
+import { WordSpec } from './schema';
 
 @Injectable()
-export class UserMongoDBRepository implements IDBUseCase {
-  constructor(@InjectModel('User') private userModel: Model<UserSpec>) {}
+export class WordMongoDBRepository implements IDBUseCase {
+  constructor(@InjectModel('Word') private wordModel: Model<WordSpec>) {}
 
   async create(payload: any) {
     const responseEntity = new ResponseEntity({
       code: 400,
-      title: 'Error en el registro',
-      description:
-        'Error en el registro, por favor verifique los datos e ingréselos nuevamente',
+      title: 'Error al guardar la palabra',
+      description: 'Por favor verifique los datos e ingréselos nuevamente',
     });
 
     try {
-      await new this.userModel(payload).save();
+      await new this.wordModel(payload).save();
 
       return payload;
     } catch (error) {
@@ -28,7 +27,7 @@ export class UserMongoDBRepository implements IDBUseCase {
 
   async find() {
     try {
-      return await this.userModel.find();
+      return await this.wordModel.find();
     } catch (error) {
       return [];
     }
@@ -38,11 +37,11 @@ export class UserMongoDBRepository implements IDBUseCase {
     const responseEntity = new ResponseEntity({
       code: 404,
       title: 'Error en el filtro',
-      description: 'No se encontró ningún usuario',
+      description: 'No se encontró ningúna palabra con el filtro ingresado',
     });
 
     try {
-      const user = await this.userModel.findOne(where);
+      const user = await this.wordModel.findOne(where);
 
       if (user) {
         return user?.['_doc'];
@@ -57,12 +56,12 @@ export class UserMongoDBRepository implements IDBUseCase {
   async update(payload: any) {
     const responseEntity = new ResponseEntity({
       code: 400,
-      title: 'Error al actualizar el usuario',
+      title: 'Error al actualizar la palabra',
       description:
         'Error en la actualización, por favor verifique los datos e ingréselos nuevamente',
     });
     try {
-      return await this.userModel.findByIdAndUpdate<any>(payload?._id, payload);
+      return await this.wordModel.findByIdAndUpdate<any>(payload?._id, payload);
     } catch (error) {
       return responseEntity;
     }
