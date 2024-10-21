@@ -50,8 +50,20 @@ export class WordMongoDBRepository implements IDBUseCase {
       description: 'No se encontró ningúna palabra con el filtro ingresado',
     });
 
+    const filter = {};
+    if (where?.englishWord) {
+      filter['englishWord'] = { $regex: where.englishWord, $options: 'i' };
+    } else if (where?.translations) {
+      filter['translations'] = { $regex: where.translations, $options: 'i' };
+    } else if (where?.englishWord && where?.translations) {
+      filter['englishWord'] = { $regex: where.englishWord, $options: 'i' };
+      filter['translations'] = { $regex: where.translations, $options: 'i' };
+    } else {
+      return [];
+    }
+
     try {
-      const words = await this.wordModel.find(where);
+      const words = await this.wordModel.find(filter);
 
       return words;
     } catch (error) {
