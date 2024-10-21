@@ -11,7 +11,7 @@ export class AuthenticationGuard implements CanActivate {
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> | any {
     const ctx = context.switchToHttp().getRequest();
-    const token = ctx.headers['token'];
+    const token = ctx.headers?.authorization?.split(' ')[1];
 
     if (!token) {
       return false;

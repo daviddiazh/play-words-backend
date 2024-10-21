@@ -17,6 +17,16 @@ export class WordMongoDBRepository implements IDBUseCase {
     });
 
     try {
+      const word: any = await this.findBy({ englishWord: payload.englishWord });
+
+      if (word.length > 0) {
+        return new ResponseEntity({
+          code: 400,
+          title: 'Error al guardar la palabra',
+          description: 'La palabra que intentas guardar ya existe',
+        });
+      }
+
       await new this.wordModel(payload).save();
 
       return payload;
@@ -41,13 +51,9 @@ export class WordMongoDBRepository implements IDBUseCase {
     });
 
     try {
-      const user = await this.wordModel.findOne(where);
+      const words = await this.wordModel.find(where);
 
-      if (user) {
-        return user?.['_doc'];
-      }
-
-      return user;
+      return words;
     } catch (error) {
       return responseEntity;
     }

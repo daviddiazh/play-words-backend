@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService, ConfigType } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule, JwtService } from '@nestjs/jwt';
@@ -39,6 +39,7 @@ import { LoginController } from './infrastructure/entry-points/controllers/login
   providers: [
     BcryptAdapter,
     UserMongoDBRepository,
+    JwtService,
     // JwtStrategy,
 
     {
@@ -78,5 +79,6 @@ import { LoginController } from './infrastructure/entry-points/controllers/login
     },
   ],
   controllers: [EnrollmentController, LoginController],
+  exports: [VerifyTokenUseCase],
 })
 export class AuthModule {}

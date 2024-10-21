@@ -11,39 +11,35 @@ import { CreateWordController } from './infrastructure/entry-points/controllers/
 import { UpdateWordController } from './infrastructure/entry-points/controllers/update-word.controller';
 import { FindByWordController } from './infrastructure/entry-points/controllers/find-word-by.controller';
 import { FindWordController } from './infrastructure/entry-points/controllers/find-word.controller';
+import { AuthModule } from '@auth/auth.module';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'Word', schema: WordSchema }])],
+  imports: [
+    AuthModule,
+    MongooseModule.forFeature([{ name: 'Word', schema: WordSchema }]),
+  ],
   providers: [
     WordMongoDBRepository,
 
     {
       inject: [WordMongoDBRepository],
       provide: CreateWordUseCase,
-      useFactory: (dbAdapter: DBUseCase) => {
-        new CreateWordUseCase(dbAdapter);
-      },
+      useFactory: (dbAdapter: DBUseCase) => new CreateWordUseCase(dbAdapter),
     },
     {
       inject: [WordMongoDBRepository],
       provide: UpdateWordUseCase,
-      useFactory: (dbAdapter: DBUseCase) => {
-        new UpdateWordUseCase(dbAdapter);
-      },
+      useFactory: (dbAdapter: DBUseCase) => new UpdateWordUseCase(dbAdapter),
     },
     {
       inject: [WordMongoDBRepository],
       provide: FindByWordUseCase,
-      useFactory: (dbAdapter: DBUseCase) => {
-        new FindByWordUseCase(dbAdapter);
-      },
+      useFactory: (dbAdapter: DBUseCase) => new FindByWordUseCase(dbAdapter),
     },
     {
       inject: [WordMongoDBRepository],
       provide: FindWordUseCase,
-      useFactory: (dbAdapter: DBUseCase) => {
-        new FindWordUseCase(dbAdapter);
-      },
+      useFactory: (dbAdapter: DBUseCase) => new FindWordUseCase(dbAdapter),
     },
   ],
   controllers: [

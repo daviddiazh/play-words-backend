@@ -7,7 +7,9 @@ export class VerifyTokenUseCase {
 
   apply(token: string) {
     try {
-      const decoded = this.jwtService.verify(token);
+      const decoded = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET,
+      });
       return { valid: true, decoded };
     } catch (error) {
       return { valid: false };

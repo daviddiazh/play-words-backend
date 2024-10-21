@@ -9,6 +9,9 @@ export class LoginDto {
   })
   email: string;
 
+  @IsNotEmpty({
+    message: 'La contraseña es obligatoria',
+  })
   @IsString({
     message: 'La contraseña debe ser un texto',
   })

@@ -47,9 +47,13 @@ export class LoginUseCase implements ILoginUseCase {
 
       return {
         user,
-        token: this.jwtService.sign({ _id: user?._id + '' }),
+        token: this.jwtService.sign(
+          { _id: user?._id + '', role: user?.role },
+          { privateKey: process.env.JWT_SECRET },
+        ),
       };
     } catch (error) {
+      console.log({ error });
       return responseEntity;
     }
   }
