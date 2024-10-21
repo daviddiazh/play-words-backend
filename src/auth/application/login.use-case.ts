@@ -7,16 +7,18 @@ import {
 } from '@auth/domain/auth/interfaces/login.use-case';
 import { IUser } from '@auth/domain/auth/interfaces/user';
 import { IResponseEntity } from '@shared/domain/response.entity';
+import { HashUseCase } from './hash.use-case';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class LoginUseCase implements ILoginUseCase {
   constructor(
     private readonly db: DBUseCase,
-    private readonly hash,
-    private readonly jwtService,
+    private readonly hash: HashUseCase,
+    private readonly jwtService: JwtService,
   ) {}
 
-  async exec(payload: IUser): Promise<ILoginResponse | IResponseEntity> {
+  async apply(payload: any): Promise<ILoginResponse | IResponseEntity> {
     const responseEntity = new ResponseEntity({
       code: 400,
       title: 'Error al iniciar sesión',
@@ -40,13 +42,14 @@ export class LoginUseCase implements ILoginUseCase {
       }
 
       delete user.password;
+      delete user.createdAt;
+      delete user.updatedAt;
 
       return {
         user,
         token: this.jwtService.sign({ _id: user?._id + '' }),
       };
     } catch (error) {
-      console.error('Error al loguearse, ' + error);
       return responseEntity;
     }
   }

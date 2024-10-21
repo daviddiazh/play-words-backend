@@ -11,10 +11,10 @@ export class DBUseCase implements IDBUseCase {
   async findBy(where: any): Promise<any> {
     return await this.db.findBy(where);
   }
-  async create(): Promise<void> {
-    await this.db.create();
+  async create(payload: any): Promise<void> {
+    await this.db.create(payload);
   }
-  async update(): Promise<void> {
-    await this.db.update();
+  async update(payload: any): Promise<void> {
+    await this.db.update(payload);
   }
 }

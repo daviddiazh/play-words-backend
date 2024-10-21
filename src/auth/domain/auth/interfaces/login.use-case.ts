@@ -7,5 +7,5 @@ export interface ILoginResponse {
 }
 
 export interface ILoginUseCase {
-  exec(payload: IUser): Promise<ILoginResponse | IResponseEntity>;
+  apply(payload: IUser): Promise<ILoginResponse | IResponseEntity>;
 }
