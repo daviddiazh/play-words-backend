@@ -7,6 +7,10 @@ import { CreateWordUseCase } from './application/create.use-case';
 import { UpdateWordUseCase } from './application/update.use-case';
 import { FindByWordUseCase } from './application/find-by-id.use-case';
 import { FindWordUseCase } from './application/find.use-case';
+import { CreateWordController } from './infrastructure/entry-points/controllers/create-word.controller';
+import { UpdateWordController } from './infrastructure/entry-points/controllers/update-word.controller';
+import { FindByWordController } from './infrastructure/entry-points/controllers/find-word-by.controller';
+import { FindWordController } from './infrastructure/entry-points/controllers/find-word.controller';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Word', schema: WordSchema }])],
@@ -42,6 +46,11 @@ import { FindWordUseCase } from './application/find.use-case';
       },
     },
   ],
-  controllers: [],
+  controllers: [
+    CreateWordController,
+    UpdateWordController,
+    FindByWordController,
+    FindWordController,
+  ],
 })
 export class WordModule {}

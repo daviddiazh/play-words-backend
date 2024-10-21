@@ -1,13 +1,13 @@
-import { Body, Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { FindByWordUseCase } from '@word/application/find-by-id.use-case';
-import { UpdateWordDto } from '../dto/update-word.dto';
+import { FindByDto } from '../dto/find-by-word.dto';
 
 @Controller('words')
 export class FindByWordController {
   constructor(private readonly useCase: FindByWordUseCase) {}
 
-  @Get()
-  run(@Body() payload: UpdateWordDto) {
-    return this.useCase.apply(payload);
+  @Get('where')
+  run(@Query() query: FindByDto) {
+    return this.useCase.apply(query);
   }
 }

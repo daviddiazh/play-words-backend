@@ -1,10 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { LoginUseCase } from '@auth/application/login.use-case';
 import { CreateWordDto } from '../dto/create-word.dto';
+import { CreateWordUseCase } from '@word/application/create.use-case';
 
 @Controller('words')
 export class CreateWordController {
-  constructor(private readonly useCase: LoginUseCase) {}
+  constructor(private readonly useCase: CreateWordUseCase) {}
 
   @Post('login')
   run(@Body() payload: CreateWordDto) {
