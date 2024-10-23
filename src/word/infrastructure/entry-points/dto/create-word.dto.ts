@@ -1,5 +1,5 @@
 import { IWord } from '@word/interfaces/word';
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { ArrayMinSize, IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateWordDto implements IWord {
   @IsNotEmpty({
@@ -16,6 +16,8 @@ export class CreateWordDto implements IWord {
   @IsArray({
     message: 'Las traducciones deben ser una lista de palabras',
   })
+  @IsString({ each: true })
+  @ArrayMinSize(1)
   translations: string[];
 
   @IsNotEmpty({
