@@ -11,9 +11,11 @@ export class WordMongoDBRepository implements IDBUseCase {
 
   async create(payload: any) {
     try {
-      const word: any = await this.findBy({ englishWord: payload.englishWord });
+      const word: any = await this.wordModel.findOne({
+        englishWord: payload.englishWord,
+      });
 
-      if (word.length > 0) {
+      if (word) {
         throw new BadRequestException('Verifica los datos por favor');
       }
 
