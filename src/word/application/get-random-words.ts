@@ -2,12 +2,12 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { DBUseCase } from '@shared/application/db.use-case';
 
 @Injectable()
-export class UpdateWordUseCase {
-  constructor(private readonly db: DBUseCase) {}
+export class GetRandomWordsUseCase {
+  constructor(private readonly examDB: DBUseCase) {}
 
-  async apply(id: any, payload: any) {
+  async apply(limit) {
     try {
-      return await this.db.update(id, payload);
+      return await this.examDB.random(limit);
     } catch (error) {
       throw new BadRequestException('Verifica los datos por favor');
     }

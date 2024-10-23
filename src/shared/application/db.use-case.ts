@@ -11,6 +11,9 @@ export class DBUseCase implements IDBUseCase {
   async findBy(where: any): Promise<any> {
     return await this.db.findBy(where);
   }
+  async random(limit: number): Promise<any[]> {
+    return await this.db.random(limit);
+  }
   async create(payload: any): Promise<void> {
     await this.db.create(payload);
   }

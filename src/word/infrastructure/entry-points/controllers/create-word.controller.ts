@@ -11,7 +11,7 @@ export class CreateWordController {
   constructor(private readonly useCase: CreateWordUseCase) {}
 
   @UseGuards(AuthenticationGuard, RoleGuard)
-  @PermitedRoles(Role.ADMIN, Role.READER)
+  @PermitedRoles(Role.ADMIN, Role.WRITER)
   @Post()
   run(@Body() payload: CreateWordDto) {
     return this.useCase.apply(payload);

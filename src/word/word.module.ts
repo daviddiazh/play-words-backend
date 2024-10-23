@@ -5,13 +5,14 @@ import { WordMongoDBRepository } from './infrastructure/driven-adapters/mongo-ad
 import { DBUseCase } from '@shared/application/db.use-case';
 import { CreateWordUseCase } from './application/create.use-case';
 import { UpdateWordUseCase } from './application/update.use-case';
-import { FindByWordUseCase } from './application/find-by-id.use-case';
+import { FindByWordUseCase } from './application/find-by.use-case';
 import { FindWordUseCase } from './application/find.use-case';
 import { CreateWordController } from './infrastructure/entry-points/controllers/create-word.controller';
 import { UpdateWordController } from './infrastructure/entry-points/controllers/update-word.controller';
 import { FindByWordController } from './infrastructure/entry-points/controllers/find-word-by.controller';
 import { FindWordController } from './infrastructure/entry-points/controllers/find-word.controller';
 import { AuthModule } from '@auth/auth.module';
+import { GetRandomWordsUseCase } from './application/get-random-words';
 
 @Module({
   imports: [
@@ -41,6 +42,12 @@ import { AuthModule } from '@auth/auth.module';
       provide: FindWordUseCase,
       useFactory: (dbAdapter: DBUseCase) => new FindWordUseCase(dbAdapter),
     },
+    {
+      inject: [WordMongoDBRepository],
+      provide: GetRandomWordsUseCase,
+      useFactory: (dbAdapter: DBUseCase) =>
+        new GetRandomWordsUseCase(dbAdapter),
+    },
   ],
   controllers: [
     CreateWordController,
@@ -48,5 +55,6 @@ import { AuthModule } from '@auth/auth.module';
     FindByWordController,
     FindWordController,
   ],
+  exports: [GetRandomWordsUseCase],
 })
 export class WordModule {}

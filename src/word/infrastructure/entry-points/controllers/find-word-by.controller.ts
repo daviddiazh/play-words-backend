@@ -1,5 +1,5 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
-import { FindByWordUseCase } from '@word/application/find-by-id.use-case';
+import { Controller, Get, Query, Req, UseGuards } from '@nestjs/common';
+import { FindByWordUseCase } from '@word/application/find-by.use-case';
 import { FindByDto } from '../dto/find-by-word.dto';
 import { AuthenticationGuard } from '@auth/infrastructure/entry-points/guards/auth.guard';
 import { RoleGuard } from '@auth/infrastructure/entry-points/guards/role.guard';

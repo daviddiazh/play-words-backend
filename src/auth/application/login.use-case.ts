@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { DBUseCase } from '@shared/application/db.use-case';
 import { ResponseEntity } from '@shared/application/response.entity';
 import {
@@ -20,7 +20,7 @@ export class LoginUseCase implements ILoginUseCase {
 
   async apply(payload: any): Promise<ILoginResponse | IResponseEntity> {
     const responseEntity = new ResponseEntity({
-      code: 400,
+      code: 401,
       title: 'Error al iniciar sesión',
       description: 'Revisa los datos por favor',
     });
@@ -30,16 +30,15 @@ export class LoginUseCase implements ILoginUseCase {
 
       const user: IUser = await this.db.findBy({ email: email.toLowerCase() });
 
-      if (!user) return responseEntity;
+      // if (!user) return responseEntity;
+      if (!user) throw new UnauthorizedException(responseEntity);
 
       const isMatchPasswords = await this.hash.compare(
         passwordReq,
         user?.password,
       );
 
-      if (!isMatchPasswords) {
-        return responseEntity;
-      }
+      if (!isMatchPasswords) throw new UnauthorizedException(responseEntity);
 
       delete user.password;
       delete user.createdAt;
@@ -53,8 +52,7 @@ export class LoginUseCase implements ILoginUseCase {
         ),
       };
     } catch (error) {
-      console.log({ error });
-      return responseEntity;
+      throw new UnauthorizedException(responseEntity);
     }
   }
 }

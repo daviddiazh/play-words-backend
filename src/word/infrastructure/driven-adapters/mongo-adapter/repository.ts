@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { IDBUseCase } from '@shared/domain/db.use-case';
@@ -10,28 +10,18 @@ export class WordMongoDBRepository implements IDBUseCase {
   constructor(@InjectModel('Word') private wordModel: Model<WordSpec>) {}
 
   async create(payload: any) {
-    const responseEntity = new ResponseEntity({
-      code: 400,
-      title: 'Error al guardar la palabra',
-      description: 'Por favor verifique los datos e ingréselos nuevamente',
-    });
-
     try {
       const word: any = await this.findBy({ englishWord: payload.englishWord });
 
       if (word.length > 0) {
-        return new ResponseEntity({
-          code: 400,
-          title: 'Error al guardar la palabra',
-          description: 'La palabra que intentas guardar ya existe',
-        });
+        throw new BadRequestException('Verifica los datos por favor');
       }
 
       await new this.wordModel(payload).save();
 
       return payload;
     } catch (error) {
-      return responseEntity;
+      throw new BadRequestException('Verifica los datos por favor');
     }
   }
 
@@ -44,22 +34,28 @@ export class WordMongoDBRepository implements IDBUseCase {
   }
 
   async findBy(where: any) {
-    const responseEntity = new ResponseEntity({
-      code: 404,
-      title: 'Error en el filtro',
-      description: 'No se encontró ningúna palabra con el filtro ingresado',
-    });
-
     const filter = {};
     if (where?.englishWord) {
-      filter['englishWord'] = { $regex: where.englishWord, $options: 'i' };
+      filter['englishWord'] = {
+        $regex: where.englishWord.trim(),
+        $options: 'i',
+      };
     } else if (where?.translations) {
-      filter['translations'] = { $regex: where.translations, $options: 'i' };
-    } else if (where?.englishWord && where?.translations) {
-      filter['englishWord'] = { $regex: where.englishWord, $options: 'i' };
-      filter['translations'] = { $regex: where.translations, $options: 'i' };
+      filter['translations'] = {
+        $regex: where.translations.trim(),
+        $options: 'i',
+      };
+    } else if (where?.englishWord && where?.translations.trim()) {
+      filter['englishWord'] = {
+        $regex: where.englishWord.trim(),
+        $options: 'i',
+      };
+      filter['translations'] = {
+        $regex: where.translations.trim(),
+        $options: 'i',
+      };
     } else {
-      return [];
+      return {};
     }
 
     try {
@@ -67,7 +63,7 @@ export class WordMongoDBRepository implements IDBUseCase {
 
       return words;
     } catch (error) {
-      return responseEntity;
+      throw new BadRequestException('Verifica los datos por favor');
     }
   }
 
@@ -81,7 +77,19 @@ export class WordMongoDBRepository implements IDBUseCase {
     try {
       return await this.wordModel.findByIdAndUpdate<any>(payload?._id, payload);
     } catch (error) {
-      return responseEntity;
+      throw new BadRequestException('Verifica los datos por favor');
+    }
+  }
+
+  async random(limit: number) {
+    try {
+      const randomDocuments = await this.wordModel.aggregate([
+        { $sample: { size: limit } },
+      ]);
+
+      return randomDocuments;
+    } catch (error) {
+      return [];
     }
   }
 }

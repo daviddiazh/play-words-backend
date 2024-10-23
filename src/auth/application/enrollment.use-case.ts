@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { HashUseCase } from './hash.use-case';
 import { DBUseCase } from '@shared/application/db.use-case';
 
@@ -15,7 +15,7 @@ export class EnrollmentUseCase {
         email: payload.email.toLowerCase(),
       });
 
-      if (user) throw new BadRequestException('Verifica los datos por favor');
+      if (user) throw new UnauthorizedException('Verifica los datos por favor');
 
       const passwordEncrypted = await this.hashUseCase.hash(payload.password);
 
