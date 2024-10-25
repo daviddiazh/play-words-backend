@@ -3,8 +3,8 @@ export interface IExam {
   userId: string | any;
   wordId: string | any;
   attempts: number;
-  showAt: Date;
-  lastReview: Date;
+  showAt: Date | string;
+  lastReview: Date | string;
   createdAt?: Date;
   updatedAt?: Date;
 }

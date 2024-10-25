@@ -7,6 +7,9 @@ import { GetTodayWordsUseCase } from './application/get-today-words.use-case';
 import { DBUseCase } from '@shared/application/db.use-case';
 import { WordModule } from '@word/word.module';
 import { GetRandomWordsUseCase } from '@word/application/get-random-words';
+import { GetTodayWordsController } from './infrastructure/entry-points/controllers/get-today-words.controller';
+import { InsertManyUseCase } from './application/insert-many.use-case';
+import { UpdateManyUseCase } from './application/update-many.use-case';
 
 @Module({
   imports: [
@@ -18,15 +21,31 @@ import { GetRandomWordsUseCase } from '@word/application/get-random-words';
     ExamMongoDBRepository,
 
     {
-      inject: [ExamMongoDBRepository, GetRandomWordsUseCase],
+      inject: [ExamMongoDBRepository],
+      provide: InsertManyUseCase,
+      useFactory: (dbAdapter: DBUseCase) => new InsertManyUseCase(dbAdapter),
+    },
+    {
+      inject: [ExamMongoDBRepository],
+      provide: UpdateManyUseCase,
+      useFactory: (dbAdapter: DBUseCase) => new UpdateManyUseCase(dbAdapter),
+    },
+    {
+      inject: [ExamMongoDBRepository, GetRandomWordsUseCase, InsertManyUseCase],
       provide: GetTodayWordsUseCase,
       useFactory: (
         dbAdapter: DBUseCase,
         getRandomUseCase: GetRandomWordsUseCase,
-      ) => new GetTodayWordsUseCase(dbAdapter, getRandomUseCase),
+        insertManyUseCase: InsertManyUseCase,
+      ) =>
+        new GetTodayWordsUseCase(
+          dbAdapter,
+          getRandomUseCase,
+          insertManyUseCase,
+        ),
     },
   ],
-  controllers: [],
+  controllers: [GetTodayWordsController],
   exports: [],
 })
 export class ExamModule {}

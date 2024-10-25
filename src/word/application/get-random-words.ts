@@ -5,9 +5,9 @@ import { DBUseCase } from '@shared/application/db.use-case';
 export class GetRandomWordsUseCase {
   constructor(private readonly examDB: DBUseCase) {}
 
-  async apply(limit) {
+  async apply(limit: number, userId: string) {
     try {
-      return await this.examDB.random(limit);
+      return await this.examDB.random(limit, userId);
     } catch (error) {
       throw new BadRequestException('Verifica los datos por favor');
     }

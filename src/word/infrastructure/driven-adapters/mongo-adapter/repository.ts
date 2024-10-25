@@ -1,8 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { IDBUseCase } from '@shared/domain/db.use-case';
-import { ResponseEntity } from '@shared/application/response.entity';
 import { WordSpec } from './schema';
 
 @Injectable()
@@ -70,12 +69,6 @@ export class WordMongoDBRepository implements IDBUseCase {
   }
 
   async update(payload: any) {
-    const responseEntity = new ResponseEntity({
-      code: 400,
-      title: 'Error al actualizar la palabra',
-      description:
-        'Error en la actualización, por favor verifique los datos e ingréselos nuevamente',
-    });
     try {
       return await this.wordModel.findByIdAndUpdate<any>(payload?._id, payload);
     } catch (error) {
@@ -83,13 +76,42 @@ export class WordMongoDBRepository implements IDBUseCase {
     }
   }
 
-  async random(limit: number) {
+  async random(limit: number, userId: string) {
     try {
-      const randomDocuments = await this.wordModel.aggregate([
-        { $sample: { size: limit } },
+      const newWords = await this.wordModel.aggregate([
+        {
+          $lookup: {
+            from: 'exams',
+            let: { wordId: '$_id', userId: new Types.ObjectId(userId) },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      { $eq: ['$wordId', '$$wordId'] },
+                      { $eq: ['$userId', '$$userId'] },
+                    ],
+                  },
+                },
+              },
+            ],
+            as: 'matchingExams',
+          },
+        },
+        {
+          $match: {
+            $expr: { $eq: [{ $size: '$matchingExams' }, 0] },
+          },
+        },
+        {
+          $project: { _id: 1, englishWord: 1, translations: 1, sentence: 1 },
+        },
+        {
+          $limit: limit,
+        },
       ]);
 
-      return randomDocuments;
+      return newWords;
     } catch (error) {
       return [];
     }

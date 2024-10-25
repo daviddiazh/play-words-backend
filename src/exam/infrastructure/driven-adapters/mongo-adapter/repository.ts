@@ -1,9 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ExamSpec } from './schema';
 import { IDBUseCase } from '@shared/domain/db.use-case';
-import { ResponseEntity } from '@shared/application/response.entity';
 
 @Injectable()
 export class ExamMongoDBRepository implements IDBUseCase {
@@ -28,6 +27,14 @@ export class ExamMongoDBRepository implements IDBUseCase {
     }
   }
 
+  async createMany(payload: any[]) {
+    try {
+      await this.examModel.insertMany(payload, { ordered: false });
+    } catch (error) {
+      throw new BadRequestException('Error al guardar los exámen del día');
+    }
+  }
+
   async find() {
     try {
       return await this.examModel.find().populate('wordId');
@@ -38,15 +45,30 @@ export class ExamMongoDBRepository implements IDBUseCase {
 
   async findBy(where: any) {
     try {
-      const filter = {};
+      const filter = { userId: new Types.ObjectId(where?.userId) };
       if (where.showAt) {
-        filter['showAt'] = where.showAt;
+        filter['showAt'] = {
+          $lte: where.showAt,
+        };
       } else if (where.attempts) {
-        filter['attempts'] = { attempts: { $gt: where.attempts } };
+        filter['attempts'] = {
+          $gte: where.attempts,
+        };
       } else if (where.lastReview) {
-        filter['lastReview'] = where.lastReview;
+        filter['lastReview'] = {
+          $lte: where.lastReview,
+        };
       }
-      return await this.examModel.find(filter).populate('wordId');
+
+      const data = await this.examModel.find(filter).populate('wordId');
+      const resp = data?.map((d) => ({
+        _id: d?.wordId?._id,
+        englishWord: d?.wordId?.englishWord,
+        translations: d?.wordId?.translations,
+        sentence: d?.wordId?.sentence,
+        attempts: d?.attempts,
+      }));
+      return resp;
     } catch (error) {
       return [];
     }
@@ -58,6 +80,23 @@ export class ExamMongoDBRepository implements IDBUseCase {
       // return await this.examModel.updateMany<any>(payload?._id, payload);
     } catch (error) {
       throw new BadRequestException('Verifica los datos por favor');
+    }
+  }
+
+  async updateMany(payload: any[]) {
+    try {
+      const bulkOps = payload.map((update) => ({
+        updateOne: {
+          filter: { wordId: update?.wordId, userId: update?.userId },
+          update: { $set: update?.newValues },
+        },
+      }));
+
+      await this.examModel.bulkWrite(bulkOps);
+    } catch (error) {
+      throw new BadRequestException(
+        'Error al guardar las respuestas del exámen del día',
+      );
     }
   }
 }

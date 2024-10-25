@@ -1,33 +1,50 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DBUseCase } from '@shared/application/db.use-case';
 import { GetRandomWordsUseCase } from '@word/application/get-random-words';
+import { InsertManyUseCase } from './insert-many.use-case';
+import mongoose from 'mongoose';
+import { IGetTodayWords } from '@exam/domain/interfaces/get-today-words';
 
 @Injectable()
 export class GetTodayWordsUseCase {
   constructor(
     private readonly examDB: DBUseCase,
     private readonly getRandomUseCase: GetRandomWordsUseCase,
+    private readonly insertManyUseCase: InsertManyUseCase,
   ) {}
 
-  async apply(payload) {
+  async apply(payload: IGetTodayWords) {
     try {
-      const todayWords = await this.examDB.findBy({ showAt: payload?.today });
-      const wordsByAttempts = await this.examDB.findBy({ attempts: 2 });
+      const todayWords = await this.examDB.findBy({
+        showAt: payload?.today,
+        userId: payload?.userId,
+      });
+      const wordsByAttempts = await this.examDB.findBy({
+        attempts: 3,
+        userId: payload?.userId,
+      });
 
       const words = [...todayWords, ...wordsByAttempts];
 
-      if (todayWords.length <= 10) {
-        const randomWords = await this.getRandomUseCase.apply(10);
-        words.filter((word) => {
-          return !randomWords.some((random) => {
-            return (
-              random?.userId == word?.userId && random?.wordId == word?.wordId
-            );
-          });
-        });
+      if (todayWords.length <= 4) {
+        const randomWords = await this.getRandomUseCase.apply(
+          2,
+          payload?.userId,
+        );
+        const mapped = randomWords?.map((word) => ({
+          wordId: word?._id,
+          userId: new mongoose.Types.ObjectId(payload?.userId),
+          attempts: 0,
+          showAt: payload?.today,
+          lastReview: undefined,
+        }));
+        // await this.insertManyUseCase.apply(mapped);
+        return [...words, randomWords].flatMap((i) => i);
       }
+
       return words;
     } catch (error) {
+      console.log({ error });
       throw new BadRequestException('Verifica los datos por favor');
     }
   }
