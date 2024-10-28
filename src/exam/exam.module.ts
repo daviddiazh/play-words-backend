@@ -10,6 +10,7 @@ import { GetRandomWordsUseCase } from '@word/application/get-random-words';
 import { GetTodayWordsController } from './infrastructure/entry-points/controllers/get-today-words.controller';
 import { InsertManyUseCase } from './application/insert-many.use-case';
 import { UpdateManyUseCase } from './application/update-many.use-case';
+import { UpdateTodayWordsController } from './infrastructure/entry-points/controllers/update-today-words.controller';
 
 @Module({
   imports: [
@@ -45,7 +46,7 @@ import { UpdateManyUseCase } from './application/update-many.use-case';
         ),
     },
   ],
-  controllers: [GetTodayWordsController],
+  controllers: [GetTodayWordsController, UpdateTodayWordsController],
   exports: [],
 })
 export class ExamModule {}

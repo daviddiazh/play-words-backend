@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { IDBUseCase } from '@shared/domain/db.use-case';
 import { WordSpec } from './schema';
+import { IWord } from '@word/interfaces/word';
 
 @Injectable()
 export class WordMongoDBRepository implements IDBUseCase {
@@ -23,6 +24,14 @@ export class WordMongoDBRepository implements IDBUseCase {
       return payload;
     } catch (error) {
       throw new BadRequestException('Verifica los datos por favor');
+    }
+  }
+
+  async createMany(payload: IWord[]) {
+    try {
+      await this.wordModel.insertMany(payload);
+    } catch (error) {
+      throw new BadRequestException(error);
     }
   }
 

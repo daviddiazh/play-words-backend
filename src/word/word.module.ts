@@ -13,6 +13,8 @@ import { FindByWordController } from './infrastructure/entry-points/controllers/
 import { FindWordController } from './infrastructure/entry-points/controllers/find-word.controller';
 import { AuthModule } from '@auth/auth.module';
 import { GetRandomWordsUseCase } from './application/get-random-words';
+import { InserManyWordsUseCase } from './application/insert-many.use-case';
+import { InsertManyController } from './infrastructure/entry-points/controllers/create-many.controller';
 
 @Module({
   imports: [
@@ -48,12 +50,19 @@ import { GetRandomWordsUseCase } from './application/get-random-words';
       useFactory: (dbAdapter: DBUseCase) =>
         new GetRandomWordsUseCase(dbAdapter),
     },
+    {
+      inject: [WordMongoDBRepository],
+      provide: InserManyWordsUseCase,
+      useFactory: (dbAdapter: DBUseCase) =>
+        new InserManyWordsUseCase(dbAdapter),
+    },
   ],
   controllers: [
     CreateWordController,
     UpdateWordController,
     FindByWordController,
     FindWordController,
+    InsertManyController,
   ],
   exports: [GetRandomWordsUseCase],
 })

@@ -5,5 +5,5 @@ export interface IDBUseCase {
   findBy?(where: any): Promise<any[] | any>;
   random?(limit: number, userId: string): Promise<any[]>;
   update: (id: any, payload: any) => Promise<void>;
-  updateMany?: (payload: any[]) => Promise<void>;
+  updateMany?: (payload: any[]) => Promise<any>;
 }

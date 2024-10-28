@@ -87,12 +87,19 @@ export class ExamMongoDBRepository implements IDBUseCase {
     try {
       const bulkOps = payload.map((update) => ({
         updateOne: {
-          filter: { wordId: update?.wordId, userId: update?.userId },
+          filter: {
+            wordId: new Types.ObjectId(update?.wordId),
+            userId: new Types.ObjectId(update?.userId),
+          },
           update: { $set: update?.newValues },
         },
       }));
 
       await this.examModel.bulkWrite(bulkOps);
+
+      return {
+        ok: true,
+      };
     } catch (error) {
       throw new BadRequestException(
         'Error al guardar las respuestas del exámen del día',

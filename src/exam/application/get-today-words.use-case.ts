@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
+import mongoose from 'mongoose';
+import { IGetTodayWords } from '@exam/domain/interfaces/get-today-words';
 import { DBUseCase } from '@shared/application/db.use-case';
 import { GetRandomWordsUseCase } from '@word/application/get-random-words';
 import { InsertManyUseCase } from './insert-many.use-case';
-import mongoose from 'mongoose';
-import { IGetTodayWords } from '@exam/domain/interfaces/get-today-words';
 
 @Injectable()
 export class GetTodayWordsUseCase {
@@ -15,6 +15,15 @@ export class GetTodayWordsUseCase {
 
   async apply(payload: IGetTodayWords) {
     try {
+      const isLastReviewToday = await this.examDB.findBy({
+        lastReview: payload?.today,
+        userId: payload?.userId,
+      });
+
+      if (isLastReviewToday?.length) {
+        return [];
+      }
+
       const todayWords = await this.examDB.findBy({
         showAt: payload?.today,
         userId: payload?.userId,
@@ -26,9 +35,9 @@ export class GetTodayWordsUseCase {
 
       const words = [...todayWords, ...wordsByAttempts];
 
-      if (todayWords.length <= 4) {
+      if (todayWords.length <= 20) {
         const randomWords = await this.getRandomUseCase.apply(
-          2,
+          20,
           payload?.userId,
         );
         const mapped = randomWords?.map((word) => ({
@@ -38,13 +47,12 @@ export class GetTodayWordsUseCase {
           showAt: payload?.today,
           lastReview: undefined,
         }));
-        // await this.insertManyUseCase.apply(mapped);
+        await this.insertManyUseCase.apply(mapped);
         return [...words, randomWords].flatMap((i) => i);
       }
 
       return words;
     } catch (error) {
-      console.log({ error });
       throw new BadRequestException('Verifica los datos por favor');
     }
   }
