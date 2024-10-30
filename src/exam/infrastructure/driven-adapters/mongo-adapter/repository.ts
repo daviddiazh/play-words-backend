@@ -56,7 +56,7 @@ export class ExamMongoDBRepository implements IDBUseCase {
         };
       } else if (where.lastReview) {
         filter['lastReview'] = {
-          $lte: where.lastReview,
+          $eq: where.lastReview,
         };
       }
 
