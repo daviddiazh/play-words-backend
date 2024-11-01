@@ -35,9 +35,9 @@ export class GetTodayWordsUseCase {
 
       const words = [...todayWords, ...wordsByAttempts];
 
-      if (todayWords.length <= 20) {
+      if (todayWords.length <= 30) {
         const randomWords = await this.getRandomUseCase.apply(
-          20,
+          25,
           payload?.userId,
         );
         const mapped = randomWords?.map((word) => ({
