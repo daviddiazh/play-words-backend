@@ -19,7 +19,6 @@ export class GetTodayWordsUseCase {
         lastReview: payload?.today,
         userId: payload?.userId,
       });
-
       if (isLastReviewToday?.length) {
         return [];
       }
