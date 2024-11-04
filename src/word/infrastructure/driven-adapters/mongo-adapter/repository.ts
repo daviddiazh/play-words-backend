@@ -112,7 +112,7 @@ export class WordMongoDBRepository implements IDBUseCase {
             $expr: { $eq: [{ $size: '$matchingExams' }, 0] },
           },
         },
-        { $sample: { size: limit } }, //TODO
+        { $sample: { size: limit } },
         {
           $project: { _id: 1, englishWord: 1, translations: 1, sentence: 1 },
         },

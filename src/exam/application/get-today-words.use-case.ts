@@ -19,6 +19,7 @@ export class GetTodayWordsUseCase {
         lastReview: payload?.today,
         userId: payload?.userId,
       });
+
       if (isLastReviewToday?.length) {
         return [];
       }
@@ -36,7 +37,7 @@ export class GetTodayWordsUseCase {
 
       if (todayWords.length <= 30) {
         const randomWords = await this.getRandomUseCase.apply(
-          25,
+          30,
           payload?.userId,
         );
         const mapped = randomWords?.map((word) => ({
@@ -50,9 +51,26 @@ export class GetTodayWordsUseCase {
         return [...words, randomWords].flatMap((i) => i);
       }
 
-      return words;
+      return this.shuffle(words);
     } catch (error) {
       throw new BadRequestException('Verifica los datos por favor');
     }
+  }
+
+  shuffle(array: any[]) {
+    let currentIndex = array.length,
+      randomIndex = 0;
+
+    while (currentIndex != 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
+    }
+
+    return array;
   }
 }
